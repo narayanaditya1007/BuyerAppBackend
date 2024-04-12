@@ -64,6 +64,15 @@ async function signup(req,res){
     }
 }
 
+async function logout(req,res){
+    try{
+        res.clearCookie('jwtToken').send("Logout Done")
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 async function updateDetails(req,res){
     try{
         const user = await User.findById(req.body.UserId);
@@ -161,6 +170,7 @@ async function removeCart(req,res){
 module.exports = {
     login,
     signup,
+    logout,
     updateDetails,
     getWishlist,
     getCart,

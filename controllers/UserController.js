@@ -101,11 +101,13 @@ async function getWishlist(req,res){
     try{
         const user =await User.findById(req.body.UserId)
         const wishlist = user.wishlist;
-        const detailWishlist=[];
+        let detailWishlist=[];
+        // console.log(process.env.TOKEN);
         await Promise.all(wishlist.map(async (pro)=>{
             const domain=DOMAIN;
-            const route=ROUTE;
-            route.replace(":platformId",pro.platform_id).replace(":productId",pro.product_id);
+            const route=ROUTE.replace(':platformId',pro.platform_id).replace(':productId',pro.product_id);
+            console.log(domain+route);
+            console.log(process.env.TOKEN);
             const response = await fetch(domain+route,{
                 method: "GET",
                 headers: {
@@ -113,7 +115,8 @@ async function getWishlist(req,res){
                   "Content-type": "application/json; charset=UTF-8"
                 }
               })
-            const product = response.json();
+            const product =await response.json();
+            console.log(product);
             detailWishlist = [...detailWishlist,product];
         }))
         res.send(detailWishlist)
@@ -127,7 +130,25 @@ async function getCart(req,res){
     try{
         const user =await User.findById(req.body.UserId)
         const cart = user.cart;
-        res.send(cart)
+        let detailCart=[];
+        // console.log(process.env.TOKEN);
+        await Promise.all(cart.map(async (pro)=>{
+            const domain=DOMAIN;
+            const route=ROUTE.replace(':platformId',pro.platform_id).replace(':productId',pro.product_id);
+            console.log(domain+route);
+            console.log(process.env.TOKEN);
+            const response = await fetch(domain+route,{
+                method: "GET",
+                headers: {
+                  "Authorization": "Bearer "+process.env.TOKEN,
+                  "Content-type": "application/json; charset=UTF-8"
+                }
+              })
+            const product =await response.json();
+            console.log(product);
+            detailCart = [...detailCart,product];
+        }))
+        res.send(detailCart)
     }
     catch(err){
         console.log(err);

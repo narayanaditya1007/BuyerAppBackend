@@ -1,7 +1,8 @@
 const User = require('../models/User')
 const bcrypt= require('bcrypt')
 const jwt = require('jsonwebtoken')
-
+const DOMAIN= "http://localhost:5000"
+const ROUTE= "/commerce/:platformId/:productId"
 async function login(req,res){
     try{
         const user=await User.findOne({email: req.body.email});
@@ -73,6 +74,16 @@ async function logout(req,res){
     }
 }
 
+async function getMyDetails(req,res){
+    try{
+        const user = await User.findById(req.body.UserId);
+        res.send(user);
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 async function updateDetails(req,res){
     try{
         const user = await User.findById(req.body.UserId);
@@ -90,7 +101,22 @@ async function getWishlist(req,res){
     try{
         const user =await User.findById(req.body.UserId)
         const wishlist = user.wishlist;
-        res.send(wishlist)
+        const detailWishlist=[];
+        await Promise.all(wishlist.map(async (pro)=>{
+            const domain=DOMAIN;
+            const route=ROUTE;
+            route.replace(":platformId",pro.platform_id).replace(":productId",pro.product_id);
+            const response = await fetch(domain+route,{
+                method: "GET",
+                headers: {
+                  "Authorization": "Bearer "+process.env.TOKEN,
+                  "Content-type": "application/json; charset=UTF-8"
+                }
+              })
+            const product = response.json();
+            detailWishlist = [...detailWishlist,product];
+        }))
+        res.send(detailWishlist)
     }
     catch(err){
         console.log(err);
@@ -171,6 +197,7 @@ module.exports = {
     login,
     signup,
     logout,
+    getMyDetails,
     updateDetails,
     getWishlist,
     getCart,

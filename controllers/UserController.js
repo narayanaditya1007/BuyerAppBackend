@@ -138,9 +138,28 @@ async function getCart(req,res){
 async function addWishlist(req,res){
     try{
         const user =await User.findById(req.body.UserId)
-        user.wishlist = [...user.wishlist,{platform_id:req.body.platformId,product_id:req.body.productId}];
-        await user.save();
-        res.send(user.wishlist)
+        const wishobj = {
+                            platform_id:req.body.platformId,
+                            product_id:req.body.productId
+                        }
+        let found = false;
+        user.wishlist.forEach((pro)=>{
+            console.log(pro);
+            if(pro.platform_id.equals(wishobj.platform_id) && pro.product_id.equals(wishobj.product_id)){
+                found = true;
+                return;
+            }
+        })
+        if(!found){
+            user.wishlist = [...user.wishlist,{platform_id:req.body.platformId,product_id:req.body.productId}];
+            await user.save();
+            res.send(user.wishlist)
+        }
+        else{
+            res.send("already in wishlist")
+        }
+
+        
     }
     catch(err){
         console.log(err);
@@ -151,9 +170,26 @@ async function addWishlist(req,res){
 async function addCart(req,res){
     try{
         const user =await User.findById(req.body.UserId)
-        user.cart = [...user.cart,{platform_id:req.body.platformId,product_id:req.body.productId}];
-        await user.save();
-        res.send(user.cart)
+        const cartobj = {
+            platform_id:req.body.platformId,
+            product_id:req.body.productId
+        }
+        let found = false;
+        user.cart.forEach((pro)=>{
+            console.log(pro);
+            if(pro.platform_id.equals(cartobj.platform_id) && pro.product_id.equals(cartobj.product_id)){
+                found = true;
+                return;
+            }
+        })
+        if(!found){
+            user.cart = [...user.cart,{platform_id:req.body.platformId,product_id:req.body.productId}];
+            await user.save();
+            res.send(user.cart)
+        }
+        else{
+            res.send("already in cart")
+        }
     }
     catch(err){
         console.log(err);

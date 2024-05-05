@@ -8,7 +8,7 @@ const Router = express.Router();
 Router.post('/order',authenticate_login,orderController.placeOrder);
 
 // get orders --buyer
-Router.get('/order',authenticate_login,orderController.getOrder);
+Router.get('/order/:userId',authenticate_login,orderController.getOrder);
 
 
 

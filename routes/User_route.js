@@ -15,6 +15,9 @@ Router.post('/user/signup',User_controller.signup);
 // user logout
 Router.post('/user/logout',User_controller.logout)
 
+// get user details
+Router.get('/user/user-details',authenticate_login,User_controller.getMyDetails)
+
 // update user detail
 Router.put('/user/update-details',authenticate_login,User_controller.updateDetails);
 

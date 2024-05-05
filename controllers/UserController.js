@@ -102,7 +102,7 @@ async function getWishlist(req,res){
         const user =await User.findById(req.body.UserId)
         const wishlist = user.wishlist;
         let detailWishlist=[];
-        // console.log(process.env.TOKEN);
+        console.log(process.env.TOKEN);
         await Promise.all(wishlist.map(async (pro)=>{
             const domain=DOMAIN;
             const route=ROUTE.replace(':platformId',pro.platform_id).replace(':productId',pro.product_id);
@@ -115,7 +115,9 @@ async function getWishlist(req,res){
                   "Content-type": "application/json; charset=UTF-8"
                 }
               })
-            const product =await response.json();
+            let product =await response.json();
+            product.platformId = pro.platform_id;
+            product.productId = pro.product_id;
             console.log(product);
             detailWishlist = [...detailWishlist,product];
         }))
@@ -144,10 +146,14 @@ async function getCart(req,res){
                   "Content-type": "application/json; charset=UTF-8"
                 }
               })
-            const product =await response.json();
-            console.log(product);
+            let product =await response.json();
+            // console.log(product);
+            product.platformId = pro.platform_id;
+            product.productId = pro.product_id; 
+            // console.log(product);
             detailCart = [...detailCart,product];
         }))
+        console.log(detailCart);
         res.send(detailCart)
     }
     catch(err){
@@ -159,6 +165,9 @@ async function getCart(req,res){
 async function addWishlist(req,res){
     try{
         const user =await User.findById(req.body.UserId)
+        if(req.body.platformId === undefined || req.body.productId === undefined){
+            throw new Error("details missing")
+        }
         const wishobj = {
                             platform_id:req.body.platformId,
                             product_id:req.body.productId

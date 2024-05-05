@@ -21,7 +21,7 @@ async function placeOrder(req,res){
 
 
 async function getOrder(req,res){
-    const allOrder =await Order.find({user_id:req.body.UserId});
+    const allOrder =await Order.find({user_id:req.params.userId});
     res.send(allOrder)
 }
 
